@@ -8,13 +8,14 @@ import {
 } from "@solana/spl-token";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { assert } from "chai";
-import type { Swap } from "../target/types/swap";
+// import type { Swap } from "../target/types/swap";
 
 import {
   confirmTransaction,
   createAccountsMintsAndTokenAccounts,
   makeKeypairs,
 } from "@solana-developers/helpers";
+import { SwapTokens } from "../target/types/swap_tokens";
 
 // Work on both Token Program and new Token Extensions Program
 const TOKEN_PROGRAM: typeof TOKEN_2022_PROGRAM_ID | typeof TOKEN_PROGRAM_ID = TOKEN_2022_PROGRAM_ID;
@@ -41,7 +42,7 @@ describe("swap", async () => {
 
   const connection = provider.connection;
 
-  const program = anchor.workspace.Swap as Program<Swap>;
+  const program = anchor.workspace.SwapTokens as Program<SwapTokens>;
 
   // We're going to reuse these accounts across multiple tests
   const accounts: Record<string, PublicKey> = {
@@ -117,7 +118,7 @@ describe("swap", async () => {
 
     // Then determine the account addresses we'll use for the offer and the vault
     const offer = PublicKey.findProgramAddressSync(
-      [Buffer.from("offer"), accounts.maker.toBuffer(), offerId.toArrayLike(Buffer, "le", 8)],
+      [accounts.maker.toBuffer(), offerId.toArrayLike(Buffer, "le", 8)],
       program.programId
     )[0];
 
@@ -143,9 +144,9 @@ describe("swap", async () => {
     const offerAccount = await program.account.offer.fetch(offer);
 
     assert(offerAccount.maker.equals(alice.publicKey));
-    assert(offerAccount.tokenMintA.equals(accounts.tokenMintA));
-    assert(offerAccount.tokenMintB.equals(accounts.tokenMintB));
-    assert(offerAccount.tokenBWantedAmount.eq(tokenBWantedAmount));
+    assert(offerAccount.tokenA.equals(accounts.tokenMintA));
+    assert(offerAccount.tokenB.equals(accounts.tokenMintB));
+    assert(offerAccount.amountTokenB.eq(tokenBWantedAmount));
   }).slow(ANCHOR_SLOW_TEST_THRESHOLD);
 
   it("Puts the tokens from the vault into Bob's account, and gives Alice Bob's tokens, when Bob takes an offer", async () => {

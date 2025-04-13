@@ -15,10 +15,6 @@ declare_id!("VPq5xwCQ5v1p2ZD5rca3H6oPRgjk3o4AjmEEPECQnpC");
 pub mod swap_tokens {
     use super::*;
 
-    // pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-    //     initialize::handler(ctx)
-    // }
-
     pub fn make_offer(
         ctx: Context<MakeOffer>,
         id: u64,
@@ -27,5 +23,10 @@ pub mod swap_tokens {
     ) -> Result<()> {
         make_offer::send_tokens_to_vault(&ctx, token_a_amount)?;
         make_offer::save_offer(ctx, id, token_b_amount)
+    }
+
+    pub fn take_offer(ctx: Context<TakeOffer>) -> Result<()> {
+        take_offer::send_tokens_to_maker(&ctx)?;
+        take_offer::release_tokens_to_taker_and_close(&ctx)
     }
 }

@@ -53,17 +53,11 @@ pub struct MakeOffer<'info> {
 }
 
 pub fn send_tokens_to_vault(ctx: &Context<MakeOffer>, token_a_amount: u64) -> Result<()> {
-    /*  pub id: u64,
-    pub maker: Pubkey,
-    pub token_a: Pubkey,
-    pub token_b: Pubkey,
-    pub amount_token_b: u64,
-    pub bump: u8, // ? */
     let acc = &ctx.accounts;
     transfer_token(
         &acc.maker_token_account_a,
         &acc.vault,
-        &token_a_amount,
+        token_a_amount,
         &acc.token_a,
         &acc.maker,
         &acc.token_program,
